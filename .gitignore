@@ -3,3 +3,6 @@
 stack.yaml.lock
 dist-newstyle/*
 .gitattributes
+/out/production/aoc-twenty/
+/.idea/
+/aoc-twenty.iml
