@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3312289afc5806cd70ed42ed5d75301b05d86e7fb106995aef5dc9a3158d3b18
+-- hash: 61b5f2bd0b4f7203bf50560856a30f84124bad27ac8f9999510711c7e98c621d
 
 name:           aoc-twenty
 version:        0.1.0.0
@@ -69,12 +69,14 @@ library
     , parser-combinators
     , pointedlist
     , text
+    , time
     , vector
   default-language: Haskell2010
 
 executable aoc-twenty-exe
   main-is: Main.hs
   other-modules:
+      Today
       Paths_aoc_twenty
   hs-source-dirs:
       app
@@ -91,5 +93,6 @@ executable aoc-twenty-exe
     , parser-combinators
     , pointedlist
     , text
+    , time
     , vector
   default-language: Haskell2010

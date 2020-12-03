@@ -27,9 +27,11 @@ import qualified Days.Day22 as Day22 (runDay)
 import qualified Days.Day23 as Day23 (runDay)
 import qualified Days.Day24 as Day24 (runDay)
 import qualified Days.Day25 as Day25 (runDay)
+
 {- ORMOLU_ENABLE -}
 
 --- Other imports
+import Today (date)
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
@@ -42,6 +44,10 @@ data Days
       { day :: Int,
         input :: Maybe String
       }
+  | ThisDay
+        { 
+          input :: Maybe String
+        }
   deriving (Show)
 
 type Verbosity = Bool
@@ -52,7 +58,7 @@ validate :: Int -> Maybe Int
 validate n = if (n `elem` Map.keys days) then (Just n) else Nothing
 
 dayParser :: Parser Days
-dayParser = (OneDay <$> day <*> input) <|> allDays
+dayParser = (OneDay <$> day <*> input) <|> (thisDay <*> input) <|> allDays
   where
     day =
       option
@@ -62,6 +68,13 @@ dayParser = (OneDay <$> day <*> input) <|> allDays
             <> metavar "DAY"
             <> help "Choose a day to print the solutions for. Omitting this option will print out all days."
         )
+    thisDay =
+          flag'
+            ThisDay
+            ( long "today"
+                <> short 't'
+                <> help "Automatically select the current day."
+            )
     input =
       optional $
         strOption
@@ -117,8 +130,8 @@ days =
       (Day25.runDay, "input/Day25.txt")
     ]
 
-performDay :: Options -> IO ()
-performDay (Options d v) = case d of
+performDay :: Int -> Options -> IO ()
+performDay today (Options d v) = case d of
   AllDays ->
     sequence_ $
       fmap
@@ -136,11 +149,23 @@ performDay (Options d v) = case d of
             putStrLn $ "\n***Day " ++ (printf "%02d" day) ++ "***"
             d v i'
             putStrLn "************"
+  ThisDay {..} ->
+    let day = today in
+      let action = (validate day >>= (days Map.!?))
+           in case action of
+                Nothing -> putStrLn "Invalid day provided. There are 25 days in Advent."
+                Just (d, i) -> do
+                  let i' = fromMaybe i input
+                  putStrLn $ "\n***Day " ++ (printf "%02d" day) ++ "***"
+                  d v i'
+                  putStrLn "************"
 
 main :: IO ()
-main = performDay =<< execParser opts
-  where
-    opts =
-      info
-        (optionsParser <**> helper)
-        (fullDesc <> progDesc "Prints out some Advent of Code solutions.")
+main = do
+  day <- date 
+  (performDay day) =<< execParser opts
+    where
+      opts =
+        info
+          (optionsParser <**> helper)
+          (fullDesc <> progDesc "Prints out some Advent of Code solutions.")
