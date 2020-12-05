@@ -42,8 +42,11 @@ type OutputA = Int
 type OutputB = Int
 
 ------------ PART A ------------
+validKeys :: Set String
+validKeys = Set.fromList ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
+
 containsKeys :: Map String String -> Bool
-containsKeys x = 7 == length (intersection (Map.keysSet x) (Set.fromList ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]))
+containsKeys x = validKeys == intersection (Map.keysSet x) validKeys
 
 partA :: Input -> OutputA
 partA inp = length $ filter containsKeys inp
