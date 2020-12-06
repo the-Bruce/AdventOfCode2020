@@ -26,10 +26,12 @@ inputParser = grp `sepBy` (string "\n\n")
   where
     grp = decl `sepBy` endOfLine
       where
-        decl = many1 letter
+        decl = do 
+         a <- many1 letter
+         return (Set.fromList a)
 
 ------------ TYPES ------------
-type Input = [[[Char]]]
+type Input = [[Set Char]]
 
 type OutputA = Int
 
@@ -37,11 +39,8 @@ type OutputB = Int
 
 ------------ PART A ------------
 partA :: Input -> OutputA
-partA inp = sum $ map (Set.size . Set.fromList . concat) inp
+partA inp = sum $ map (Set.size . foldl1' Set.union) inp
 
 ------------ PART B ------------
-letters :: Set Char
-letters = Set.fromList "abcdefghijklmnopqrstuvwxyz"
-
 partB :: Input -> OutputB
-partB inp = sum $ map ((Set.size . foldl' Set.intersection letters) . map Set.fromList) inp
+partB inp = sum $ map (Set.size . foldl1' Set.intersection) inp
