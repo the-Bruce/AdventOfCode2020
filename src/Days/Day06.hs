@@ -2,6 +2,7 @@ module Days.Day06 (runDay) where
 
 {- ORMOLU_DISABLE -}
 import Data.List
+import qualified Data.List as List
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 import Data.Maybe
@@ -21,19 +22,26 @@ runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser = grp `sepBy` (string "\n\n")
+  where
+    grp = decl `sepBy` endOfLine
+      where
+        decl = many1 letter
 
 ------------ TYPES ------------
-type Input = Void
+type Input = [[[Char]]]
 
-type OutputA = Void
+type OutputA = Int
 
-type OutputB = Void
+type OutputB = Int
 
 ------------ PART A ------------
 partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+partA inp = sum $ map (Set.size . Set.fromList . concat) inp
 
 ------------ PART B ------------
+letters :: Set Char
+letters = Set.fromList "abcdefghijklmnopqrstuvwxyz"
+
 partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB inp = sum $ map ((Set.size . foldl' Set.intersection letters) . map Set.fromList) inp
